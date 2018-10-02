@@ -12,18 +12,39 @@
  * limitations under the License.
  */
 
-rule NetworkAdminUser {
-    description: "Grant business network administrators full access to user resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "**"
-    action: ALLOW
-}
+'use strict';
+/**
+ * Write your transaction processor functions here
+ */
 
-rule NetworkAdminSystem {
-    description: "Grant business network administrators full access to system resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
-    operation: ALL
-    resource: "org.hyperledger.composer.system.**"
-    action: ALLOW
+/**
+ * Sample transaction
+ * @param {org.example.empty.processClaims} processClaims
+ * @transaction
+ */
+
+async function processClaims(tx) {  // eslint-disable-line no-unused-vars
+
+    // Save the old value of the asset.
+    const oldAmount = tx.claim.amount;
+
+    // Update the asset with the new value.
+    tx.claim.amount = tx.newAmount;
+    //tx.claim.approvalStatus = false;
+
+    // Get the asset registry for the asset.
+    const assetRegistry = await getAssetRegistry('org.example.empty.claimContract');
+    // Update the asset in the asset registry.
+    await assetRegistry.update(tx.claim);
+
+    // Emit an event for the modified asset.
+    let event = getFactory().newEvent('org.example.empty', 'SampleEvent');
+    event.claim = tx.claim;
+    event.oldAmount = oldAmount;
+    event.newAmount = tx.newAmount;
+    if (tx.claim.approvalStatus == true) {
+      emit(event);
+    } else {
+      throw new Error('transaction unsuccessful'); 
+    }
 }
