@@ -14,18 +14,44 @@
 
 'use strict';
 /**
- * Write your transction processor functions here
+ * Write your transaction processor functions here
  */
 
 /**
  * Sample transaction
- * @param {org.example.mynetwork.SampleTransaction} sampleTransaction
+ * @param {org.example.empty.processClaims} processClaims
  * @transaction
  */
- async function onprocessClaims(claimToBeProcessed) {   // eslint-disable-line no-unused-vars
-     console.log('### onprocessClaims ' + claimToBeProcessed.toString());
-     /*claimToBeProcessed.title.claimGranted = true; */
 
-     const registry = await getAssetRegistry('net.biz.digitalPropertyNetwork.claimAmount');
-     await registry.update(claimToBeProcessed.title);
- }
+async function processClaims(tx) {  // eslint-disable-line no-unused-vars
+
+    // Save the old value of the asset.
+    const oldAmount = tx.claim.amount;
+
+    // Update the asset with the new value.
+    tx.claim.amount = tx.newAmount;
+    //tx.claim.approvalStatus = false;
+
+    // Get the asset registry for the asset.
+    const assetRegistry = await getAssetRegistry('org.example.empty.claimContract');
+    // Update the asset in the asset registry.
+    await assetRegistry.update(tx.claim);
+
+    // Emit an event for the modified asset.
+    let event = getFactory().newEvent('org.example.empty', 'SampleEvent');
+    event.claim = tx.claim;
+    event.oldAmount = oldAmount;
+    event.newAmount = tx.newAmount;
+    if (tx.claim.approvalStatus == true) {
+      emit(event);
+    } else {
+      throw new Error('transaction unsuccessful'); 
+    }
+}
+  
+
+
+
+
+
+
