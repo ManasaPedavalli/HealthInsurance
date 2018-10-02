@@ -12,37 +12,62 @@
  * limitations under the License.
  */
 
-/**
- * Write your model definitions here
- */
-
-namespace org.example.mynetwork
-
-asset patientAsset identified by patientId {
-  o String   patientId
-  --> Person  patient
-  o String   information
-  o String  claimGranted
-}
+namespace org.example.empty
 
 asset claimContract identified by claimId {
   o String    claimId
-  --> Person    insurer
+  --> Insurance   insurer
   --> Person    patient
-  o String 		startDate
-  o String 		endDate
-  o String 		claimAmount
+  o String 		amount
+  o Boolean approvalStatus
+}
+
+asset hosVer identified by verId {
+  o String verId
+  o Boolean approvalStatus
+  --> claimContract claim
 }
 
 participant Person identified by personId {
   o String personId
   o String firstName
   o String lastName
+  --> hosVer verId
 }
 
-
+participant Insurance identified by insurerId {
+  o String insurerId
+  o String firstName
+  o String lastName
+}
+ 
+participant Hospital identified by hosId {
+  o String hosId
+  --> Person patient
+}
+                                        
 transaction processClaims {
   --> Person patient
-  --> Person insurer
+  --> Insurance insurer
+  o String newAmount
+  --> claimContract claim
+}
 
+transaction verification {
+  --> Person patient
+  --> Hospital hos
+  --> hosVer approvalStatus
+  --> claimContract claim
+  --> hosVer verId
+}
+
+event verifyProcess {
+  o Boolean approvalStatus
+  --> claimContract claim  
+}
+
+event SampleEvent {
+  --> claimContract claim
+  o String oldAmount
+  o String newAmount
 }
