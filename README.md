@@ -26,14 +26,16 @@ To test this Business Network Definition in the hyperledger playgound test tab:
 
 ### Participants
  Create ```Patient``` , ```Insurer``` participants this way:
- ``` {
+ ```
+ {
   "$class": "org.example.empty.Insurance",
   "insurerId": "1",
   "firstName": "***",
   "lastName": "***"
 } 
 ```
-```{
+```
+{
   "$class": "org.example.empty.Person",
   "personId": "5",
   "firstName": "***",
@@ -41,7 +43,8 @@ To test this Business Network Definition in the hyperledger playgound test tab:
 }
 ```
 Create a ```ClaimGrant``` Asset:
-```{
+```
+{
   "$class": "org.example.empty.claimContract",
   "claimId": "6",
   "insurer": "resource:org.example.empty.Insurance#1",
@@ -49,7 +52,8 @@ Create a ```ClaimGrant``` Asset:
 }
 ```
 Submit a ```ClaimProcess``` transaction:
-```{
+```
+{
   "$class": "org.example.empty.processClaims",
   "patient": "resource:org.example.empty.Person#1",
   "insurer": "resource:org.example.empty.Insurance#5",
